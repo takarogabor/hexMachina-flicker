@@ -4,6 +4,7 @@ import hex.event.Dispatcher;
 import hex.event.Event;
 import hex.event.MessageType;
 import hex.log.Logger;
+import js.Lib;
 import js.html.DivElement;
 import js.Browser;
 import js.html.Image;
@@ -12,9 +13,8 @@ import js.html.InputElement;
 import js.html.MouseEvent;
 import js.html.KeyboardEvent;
 import api.react.ReactDOM;
-import api.react.ReactMacro.jsx;
+import api.react.React;
 
-import example.module.thumbnail.view.react.ThumbnailDiv;
 
 /**
  * ...
@@ -32,9 +32,9 @@ class ThumbnailView implements IThumbnailView
 		this.dispatcher = new Dispatcher();
 		this.stateUpdaters = new Array<Dynamic>();
 		
-		ReactDOM.render(jsx('<ThumbnailDiv addStateUpdater=$addStateUpdater imgClickHandler=$imgClickHandler/>'), 
-				Browser.document.getElementById('thumbnailBar'));
-		
+		var component = Reflect.field(Browser.window, "ThumbnailDiv");
+		var element = React.createElement(component, {addStateUpdater : addStateUpdater, imgClickHandler : imgClickHandler});
+		ReactDOM.render(element, Browser.document.getElementById("thumbnailBar"));
 	}
 	
 	public function addStateUpdater(func : Dynamic) : Void
@@ -44,7 +44,7 @@ class ThumbnailView implements IThumbnailView
 	
 	public function setImages(urls:Array<String>) : Void
 	{
-		Logger.DEBUG( "ThumbnailModule setImages urls:" + urls );
+		Logger.DEBUG( " setImages urls:" + urls );
 		for (f in this.stateUpdaters) {
 			f(urls);
 		}
@@ -52,9 +52,10 @@ class ThumbnailView implements IThumbnailView
 	}
 	
 	
-	public function imgClickHandler(url:String):Void 
+	public function imgClickHandler(e:Event):Void 
 	{
-		this.dispatcher.dispatch( ThumbnailViewMessage.THUMBNAIL_CLICK, [url]);
+		
+		this.dispatcher.dispatch( ThumbnailViewMessage.THUMBNAIL_CLICK, [e.target.currentSrc]);
 	}
 	
 	public function addHandler(messageType:MessageType, scope:Dynamic, callback:Dynamic):Bool 

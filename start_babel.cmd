@@ -1,0 +1,1 @@
+babel --presets es2015,react --watch resource/react/jsx --out-dir bin/js
