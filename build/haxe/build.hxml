@@ -5,3 +5,4 @@
 -cp test
 
 -lib hexmachina
+-lib react

@@ -40,7 +40,7 @@
   </classpaths>
   <!-- Build options -->
   <build>
-    <option directives="" />
+    <option directives="react_global" />
     <option flashStrict="False" />
     <option noInlineOnDebug="False" />
     <option mainClass="example.HelloWorldExample" />

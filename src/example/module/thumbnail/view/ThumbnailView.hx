@@ -1,4 +1,5 @@
 package example.module.thumbnail.view;
+import api.react.ReactComponent;
 import hex.event.Dispatcher;
 import hex.event.Event;
 import hex.event.MessageType;
@@ -10,6 +11,10 @@ import example.module.thumbnail.view.message.ThumbnailViewMessage;
 import js.html.InputElement;
 import js.html.MouseEvent;
 import js.html.KeyboardEvent;
+import api.react.ReactDOM;
+import api.react.ReactMacro.jsx;
+
+import example.module.thumbnail.view.react.ThumbnailDiv;
 
 /**
  * ...
@@ -18,43 +23,39 @@ import js.html.KeyboardEvent;
 class ThumbnailView implements IThumbnailView
 {
 
-	var thumbnailBar:DivElement;
-	
 	var dispatcher:Dispatcher<IThumbnailViewListener>;
 	
+	var stateUpdaters : Array<Dynamic>;
 		
 	public function new() 
 	{
 		this.dispatcher = new Dispatcher();
-		this.thumbnailBar = cast Browser.document.getElementById("thumbnailBar");
+		this.stateUpdaters = new Array<Dynamic>();
+		
+		ReactDOM.render(jsx('<ThumbnailDiv addStateUpdater=$addStateUpdater imgClickHandler=$imgClickHandler/>'), 
+				Browser.document.getElementById('thumbnailBar'));
+		
+	}
+	
+	public function addStateUpdater(func : Dynamic) : Void
+	{
+		stateUpdaters.push(func);
 	}
 	
 	public function setImages(urls:Array<String>) : Void
 	{
 		Logger.DEBUG( "ThumbnailModule setImages urls:" + urls );
-		
-		while (this.thumbnailBar.firstChild != null) {
-			this.thumbnailBar.removeChild(this.thumbnailBar.firstChild);
+		for (f in this.stateUpdaters) {
+			f(urls);
 		}
-		
-		for (url in urls) {
-			var tImage:Image = new Image();
-			tImage.src = url;
-			tImage.width = 200;
-			var f = this._onClick.bind(_, url);
-			tImage.addEventListener( "click", f );
-			this.thumbnailBar.appendChild(tImage);
-		}
-		
 		this.dispatcher.dispatch( ThumbnailViewMessage.THUMBNAIL_CLICK, [urls[0]]);
 	}
 	
-	private function _onClick(e:MouseEvent, url:String):Void 
+	
+	public function imgClickHandler(url:String):Void 
 	{
 		this.dispatcher.dispatch( ThumbnailViewMessage.THUMBNAIL_CLICK, [url]);
 	}
-	
-	/* INTERFACE example.module.thumbnail.view.IThumbnailView */
 	
 	public function addHandler(messageType:MessageType, scope:Dynamic, callback:Dynamic):Bool 
 	{

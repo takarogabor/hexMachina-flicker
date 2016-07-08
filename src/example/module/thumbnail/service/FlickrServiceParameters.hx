@@ -22,7 +22,7 @@ class FlickrServiceParameters extends HTTPServiceParameters
 	{
 		super();
 		this.method = "flickr.photos.search";
-		this.api_key = "52fe8fba4ebab60f11b0db7e42b1c66b";
+		this.api_key = "9cfe79d83b9e1dc8aa7174cfe5b3409a";
 		this.tags = "aircraft";
 		this.per_page = 5;
 		this.page = page;
